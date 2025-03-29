@@ -2,7 +2,7 @@ services:
   # Backend Laravel API
   - type: web
     name: catalogo-api
-    runtime: php
+    env: php
     buildCommand: "composer install && php artisan migrate --force"
     startCommand: "php artisan serve --host 0.0.0.0 --port $PORT"
     plan: free
@@ -17,7 +17,7 @@ services:
         fromService:
           name: catalogo-api
           type: web
-          property: url
+          property: host
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
@@ -55,7 +55,7 @@ services:
         fromService:
           name: catalogo-frontend
           type: web
-          property: url
+          property: host
     repo: https://github.com/pablovirtual/fullstack-catalogo-peliculas
     branch: master
     rootDir: backend/catalogo
@@ -63,10 +63,10 @@ services:
   # Frontend Angular Application
   - type: web
     name: catalogo-frontend
-    runtime: node
+    env: node
     buildCommand: |
       npm ci
-      sed -i "s|API_URL|$(API_URL)/api|g" src/environments/environment.prod.ts
+      sed -i "s|API_URL|https://$(API_URL)/api|g" src/environments/environment.prod.ts
       npm run build
     startCommand: npx serve -s dist/catalogo-peliculas
     plan: free
@@ -77,7 +77,7 @@ services:
         fromService:
           name: catalogo-api
           type: web
-          property: url
+          property: host
     repo: https://github.com/pablovirtual/fullstack-catalogo-peliculas
     branch: master
     rootDir: frontend/catalogo-peliculas
