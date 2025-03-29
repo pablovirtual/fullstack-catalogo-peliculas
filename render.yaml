@@ -2,7 +2,7 @@ services:
   # Backend Laravel API
   - type: web
     name: catalogo-api
-    runtime: php
+    runtime: php@8.1
     buildCommand: >
       curl -sS https://getcomposer.org/installer | php &&
       php composer.phar install --no-dev &&
@@ -60,7 +60,7 @@ services:
   # Frontend Angular Application
   - type: web
     name: catalogo-frontend
-    runtime: node
+    runtime: node@16
     buildCommand: >
       npm ci &&
       sed -i "s|API_URL|$API_URL|g" src/environments/environment.prod.ts &&
