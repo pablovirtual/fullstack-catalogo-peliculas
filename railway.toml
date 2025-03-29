@@ -3,5 +3,5 @@ builder = "dockerfile"
 dockerfilePath = "backend/catalogo/Dockerfile"
 
 [deploy]
-healthcheckPath = "/test"
-healthcheckTimeout = 300
+restartPolicyType = "never"
+numReplicas = 1
