@@ -2,7 +2,7 @@ services:
   # Backend Laravel API
   - type: web
     name: catalogo-api
-    env: php
+    runtime: php
     rootDir: backend/catalogo
     buildCommand: "composer install && npm install && npm run build && php artisan migrate --force"
     startCommand: "php artisan serve --host 0.0.0.0 --port $PORT"
@@ -60,7 +60,7 @@ services:
   # Frontend Angular Application
   - type: web
     name: catalogo-frontend
-    env: node
+    runtime: node
     rootDir: frontend/catalogo-peliculas
     buildCommand: |
       npm install
