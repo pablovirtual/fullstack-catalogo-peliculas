@@ -20,11 +20,14 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copiar código de la aplicación
-COPY . .
+# Primero copia solo composer.json y composer.lock para aprovechar la caché de Docker
+COPY composer.json composer.lock ./
 
 # Instalar dependencias de PHP
-RUN composer install --optimize-autoloader
+RUN composer install --optimize-autoloader --no-scripts
+
+# Copiar el resto del código de la aplicación
+COPY . .
 
 # Configurar permisos de almacenamiento
 RUN chmod -R 777 storage bootstrap/cache
