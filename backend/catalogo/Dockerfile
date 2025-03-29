@@ -32,9 +32,5 @@ RUN chmod -R 777 storage bootstrap/cache
 # Exponer puerto asignado por Railway
 EXPOSE ${PORT:-8000}
 
-# Script para configurar la base de datos y ejecutar el servidor
-COPY railway-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/railway-entrypoint.sh
-
-# Ejecutar el script de inicio
-ENTRYPOINT ["/usr/local/bin/railway-entrypoint.sh"]
+# Comandos de inicio (incluidos directamente en vez de usar un script externo)
+CMD bash -c 'if [ -z "$APP_KEY" ]; then php artisan key:generate; fi && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}'
