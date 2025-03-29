@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { Movie } from '../models/movie';
+import { environment } from '../../environments/environment';
 
 /**
  * @description Servicio para gestionar las operaciones relacionadas con películas
@@ -18,7 +19,7 @@ import { Movie } from '../models/movie';
 })
 export class MovieService {
   /** URL base de la API */
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = environment.apiUrl;
   
   /** Opciones HTTP predeterminadas */
   private httpOptions = {
