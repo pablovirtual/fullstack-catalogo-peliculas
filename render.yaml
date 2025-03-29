@@ -62,7 +62,10 @@ services:
     name: catalogo-frontend
     env: node
     rootDir: frontend/catalogo-peliculas
-    buildCommand: npm install && npm run build
+    buildCommand: |
+      npm install
+      sed -i "s|API_URL|https://$API_URL/api|g" src/environments/environment.prod.ts
+      npm run build -- --configuration production
     startCommand: npx serve -s dist/catalogo-peliculas
     envVars:
       - key: NODE_ENV
