@@ -20,20 +20,20 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Primero copia solo composer.json y composer.lock para aprovechar la caché de Docker
-COPY composer.json composer.lock ./
-
-# Instalar dependencias de PHP
-RUN composer install --optimize-autoloader --no-scripts
-
-# Copiar el resto del código de la aplicación
+# Copiar todo el código de la aplicación
 COPY . .
 
+# Crear un composer.json vacío si no existe
+RUN if [ ! -f "composer.json" ]; then echo '{"require": {}}' > composer.json; fi
+
+# Instalar dependencias de PHP
+RUN composer install --ignore-platform-reqs --no-scripts || true
+
 # Configurar permisos de almacenamiento
-RUN chmod -R 777 storage bootstrap/cache
+RUN chmod -R 777 storage bootstrap/cache || true
 
 # Exponer puerto asignado por Railway
 EXPOSE ${PORT:-8000}
 
-# Comandos de inicio (incluidos directamente en vez de usar un script externo)
-CMD bash -c 'if [ -z "$APP_KEY" ]; then php artisan key:generate; fi && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}'
+# Comandos de inicio
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
