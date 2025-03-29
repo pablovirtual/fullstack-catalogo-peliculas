@@ -2,12 +2,10 @@ services:
   # Backend Laravel API
   - type: web
     name: catalogo-api
-    runtime: php
-    buildCommand: >
-      curl -sS https://getcomposer.org/installer | php &&
-      php composer.phar install --no-dev &&
-      php artisan migrate --force
-    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+    runtime: docker
+    repo: https://github.com/pablovirtual/fullstack-catalogo-peliculas
+    branch: master
+    rootDir: backend/catalogo
     envVars:
       - key: APP_ENV
         value: production
@@ -53,9 +51,6 @@ services:
       - key: SESSION_LIFETIME
         value: 120
     healthCheckPath: /api/test
-    repo: https://github.com/pablovirtual/fullstack-catalogo-peliculas
-    branch: master
-    rootDir: backend/catalogo
 
   # Frontend Angular Application
   - type: web
