@@ -2,10 +2,12 @@ services:
   # Backend Laravel API
   - type: web
     name: catalogo-api
-    env: php
-    buildCommand: "composer install && php artisan migrate --force"
-    startCommand: "php artisan serve --host 0.0.0.0 --port $PORT"
-    plan: free
+    runtime: php
+    buildCommand: >
+      curl -sS https://getcomposer.org/installer | php &&
+      php composer.phar install --no-dev &&
+      php artisan migrate --force
+    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
     envVars:
       - key: APP_ENV
         value: production
@@ -15,9 +17,9 @@ services:
         generateValue: true
       - key: APP_URL
         fromService:
-          name: catalogo-api
           type: web
-          property: host
+          name: catalogo-api
+          envVarKey: RENDER_EXTERNAL_URL
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
@@ -50,12 +52,7 @@ services:
         value: cookie
       - key: SESSION_LIFETIME
         value: 120
-      # Enable CORS for Angular frontend
-      - key: CORS_ALLOWED_ORIGINS
-        fromService:
-          name: catalogo-frontend
-          type: web
-          property: host
+    healthCheckPath: /api/test
     repo: https://github.com/pablovirtual/fullstack-catalogo-peliculas
     branch: master
     rootDir: backend/catalogo
@@ -63,21 +60,20 @@ services:
   # Frontend Angular Application
   - type: web
     name: catalogo-frontend
-    env: node
-    buildCommand: |
-      npm ci
-      sed -i "s|API_URL|https://$(API_URL)/api|g" src/environments/environment.prod.ts
+    runtime: node
+    buildCommand: >
+      npm ci &&
+      sed -i "s|API_URL|$API_URL|g" src/environments/environment.prod.ts &&
       npm run build
     startCommand: npx serve -s dist/catalogo-peliculas
-    plan: free
     envVars:
       - key: NODE_ENV
         value: production
       - key: API_URL
         fromService:
-          name: catalogo-api
           type: web
-          property: host
+          name: catalogo-api
+          envVarKey: RENDER_EXTERNAL_URL
     repo: https://github.com/pablovirtual/fullstack-catalogo-peliculas
     branch: master
     rootDir: frontend/catalogo-peliculas
