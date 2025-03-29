@@ -24,16 +24,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 
 # Instalar dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --optimize-autoloader
 
 # Configurar permisos de almacenamiento
 RUN chmod -R 777 storage bootstrap/cache
 
-# Generar clave de aplicación
-RUN php artisan key:generate
+# Exponer puerto asignado por Railway
+EXPOSE ${PORT:-8000}
 
-# Exponer puerto 8000
-EXPOSE 8000
+# Script para configurar la base de datos y ejecutar el servidor
+COPY railway-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/railway-entrypoint.sh
 
-# Ejecutar el comando de inicio de la aplicación
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Ejecutar el script de inicio
+ENTRYPOINT ["/usr/local/bin/railway-entrypoint.sh"]
